@@ -20,7 +20,7 @@ namespace RigoFunc.Account.Services {
     /// Represents the default implementation of the <see cref="IAccountService"/> interface.
     /// </summary>
     /// <typeparam name="TUser">The type of the t user.</typeparam>
-    public class DefaultAccountService<TUser> : IAccountService where TUser: class, new() {
+    public class DefaultAccountService<TUser> : IAccountService where TUser: class {
         private readonly UserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -119,10 +119,10 @@ namespace RigoFunc.Account.Services {
                 throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
             }
 
-            user = new TUser();
-            
-            // set user name
-            var result = await _userManager.SetUserNameAsync(user, model.PhoneNumber);
+            // must have a constructor with only one user name parameter.
+            user = Activator.CreateInstance(typeof(TUser), model.PhoneNumber) as TUser;
+
+            var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded) {
                 HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
             }
@@ -133,11 +133,6 @@ namespace RigoFunc.Account.Services {
                 if (!result.Succeeded) {
                     HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
                 }
-            }
-
-            result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded) {
-                HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
             }
 
             // sign in
@@ -207,10 +202,12 @@ namespace RigoFunc.Account.Services {
                     throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
                 }
 
-                user = new TUser();
+                var password = $"{GenericUtil.UniqueKey()}@520";
 
-                // set user name
-                var result = await _userManager.SetUserNameAsync(user, model.PhoneNumber);
+                // must have a constructor with only one user name parameter.
+                user = Activator.CreateInstance(typeof(TUser), model.PhoneNumber) as TUser;
+
+                var result = await _userManager.CreateAsync(user, password);
                 if (!result.Succeeded) {
                     HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
                 }
@@ -221,12 +218,6 @@ namespace RigoFunc.Account.Services {
                     if (!result.Succeeded) {
                         HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
                     }
-                }
-
-                var password = $"{GenericUtil.UniqueKey()}@520";
-                result = await _userManager.CreateAsync(user, password);
-                if (!result.Succeeded) {
-                    HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
                 }
 
                 SendSmsResult smsResult;
