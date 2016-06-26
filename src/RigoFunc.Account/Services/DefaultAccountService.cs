@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityModel.Client;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -72,7 +73,9 @@ namespace RigoFunc.Account.Services {
             }
 
             if (user == null) {
-                throw new Exception("cannot find the user by id or phone number");
+                _logger.LogWarning($"cannot find the user by id or phone number: {JsonConvert.SerializeObject(model)}");
+
+                return null;
             }
 
             var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
