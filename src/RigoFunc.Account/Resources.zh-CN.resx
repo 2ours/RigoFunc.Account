@@ -117,6 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="LockedOutUser" xml:space="preserve">
+    <value>登陆失败，因为账号已经被锁定</value>
+    <comment>failed because the user was logged out.</comment>
+  </data>
+  <data name="LockoutUserFailed" xml:space="preserve">
+    <value>设置用户锁定状态失败</value>
+    <comment>Failed to set user lockout status.</comment>
+  </data>
   <data name="LoginFailedWithCodeAndPhone" xml:space="preserve">
     <value>验证码[{0}]手机号[{1}]登陆失败</value>
     <comment>login failed with code and phone</comment>

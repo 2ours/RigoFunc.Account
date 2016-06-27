@@ -117,6 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="LockedOutUser" xml:space="preserve">
+    <value>Login failed because the user was logged out.</value>
+    <comment>failed because the user was logged out.</comment>
+  </data>
+  <data name="LockoutUserFailed" xml:space="preserve">
+    <value>Failed to set user lockout status.</value>
+    <comment>Failed to set user lockout status.</comment>
+  </data>
   <data name="LoginFailedWithCodeAndPhone" xml:space="preserve">
     <value>Failed login with code [{0}] and phone number [{1}]</value>
     <comment>login failed with code and phone</comment>

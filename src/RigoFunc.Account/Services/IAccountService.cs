@@ -14,6 +14,14 @@ namespace RigoFunc.Account.Services {
         /// <returns>A <see cref="Task{TResult}"/> represents the get operation. Task result contains the found user.</returns>
         Task<OAuthUser> GetAsync(FindUserModel model);
         /// <summary>
+        /// Sets a flag indicating whether the specified user is locked out, as an asynchronous operation.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, the <see cref="IdentityResult"/> of the operation
+        /// </returns>
+        Task<bool> LockoutAsync(LockoutModel model);
+        /// <summary>
         /// Registers a new user asynchronous.
         /// </summary>
         /// <param name="model">The register model.</param>

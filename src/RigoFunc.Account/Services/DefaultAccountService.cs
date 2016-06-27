@@ -106,6 +106,30 @@ namespace RigoFunc.Account.Services {
 
             return OAuthUser.FromUser(userPrincipal);
         }
+        
+        /// <summary>
+        /// Sets a flag indicating whether the specified user is locked out, as an asynchronous operation.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, the <see cref="IdentityResult"/> of the operation
+        /// </returns>
+        public async Task<bool> LockoutAsync(LockoutModel model) {
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user == null) {
+                throw new ArgumentNullException(string.Format(Resources.NotFoundUserByPhoneNumber, model.UserName));
+            }
+
+            var result = await _userManager.SetLockoutEnabledAsync(user, model.Enabled);
+            if (result.Succeeded && model.Enabled) {
+                // lockout a year
+                result = await _userManager.SetLockoutEndDateAsync(user, model.LockoutEnd ?? DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(365)));
+
+                return true;
+            }
+
+            throw new Exception(Resources.LockoutUserFailed);
+        }
 
         /// <summary>
         /// Registers a new user asynchronous.
@@ -154,6 +178,9 @@ namespace RigoFunc.Account.Services {
             if (result.Succeeded) {
                 _logger.LogInformation(1, "User logged in.");
                 return await RequestTokenAsync(model.UserName, model.Password);
+            }
+            else if(result == SignInResult.LockedOut) {
+                throw new Exception(Resources.LockedOutUser);
             }
 
             _logger.LogError(result.ToString());
@@ -240,6 +267,10 @@ namespace RigoFunc.Account.Services {
                 return await RequestTokenAsync(model.PhoneNumber, password);
             }
             else {
+                if(await _userManager.IsLockedOutAsync(user)) {
+                    throw new Exception(Resources.LockedOutUser);
+                }
+
                 if (!await _userManager.VerifyChangePhoneNumberTokenAsync(user, model.Code, model.PhoneNumber)) {
                     throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
                 }

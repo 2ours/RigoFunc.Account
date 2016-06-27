@@ -9,9 +9,9 @@
 //------------------------------------------------------------------------------
 
 namespace RigoFunc.Account {
-    using System;
     using System.Reflection;
-    
+
+
     /// <summary>
     ///    A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -55,6 +55,24 @@ namespace RigoFunc.Account {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+
+        /// <summary>
+        ///    Looks up a localized string similar to Login failed because the user was logged out..
+        /// </summary>
+        internal static string LockedOutUser {
+            get {
+                return ResourceManager.GetString("LockedOutUser", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///    Looks up a localized string similar to Failed to set user lockout status..
+        /// </summary>
+        internal static string LockoutUserFailed {
+            get {
+                return ResourceManager.GetString("LockoutUserFailed", resourceCulture);
             }
         }
 
