@@ -121,9 +121,11 @@ namespace RigoFunc.Account.Services {
             }
 
             var result = await _userManager.SetLockoutEnabledAsync(user, model.Enabled);
-            if (result.Succeeded && model.Enabled) {
-                // lockout a year
-                result = await _userManager.SetLockoutEndDateAsync(user, model.LockoutEnd ?? DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(365)));
+            if (result.Succeeded) {
+                if (model.Enabled) {
+                    // lockout a year
+                    result = await _userManager.SetLockoutEndDateAsync(user, model.LockoutEnd ?? DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(365)));
+                }
 
                 return true;
             }
