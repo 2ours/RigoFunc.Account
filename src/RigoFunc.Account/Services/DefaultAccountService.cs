@@ -146,8 +146,8 @@ namespace RigoFunc.Account.Services {
             user = Activator.CreateInstance(typeof(TUser), model.UserName ?? model.PhoneNumber) as TUser;
 
             // why md5 here? because we should force APP or web to MD5 their plain password
-            var password = model.Password ?? GenericUtil.EncryptMD5($"{GenericUtil.UniqueKey(3)}@{model.Code ?? GenerateCode(model.PhoneNumber)}");
-            var result = await _userManager.CreateAsync(user, password);
+            var password = model.Password ?? $"{GenericUtil.UniqueKey(3)}@{model.Code ?? GenerateCode(model.PhoneNumber)}";
+            var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
             if (!result.Succeeded) {
                 HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
             }
@@ -308,7 +308,7 @@ namespace RigoFunc.Account.Services {
                 // sign in
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                return await RequestTokenAsync(model.PhoneNumber, password);
+                return await RequestTokenAsync(model.PhoneNumber, GenericUtil.EncryptMD5(password));
             }
             else {
                 if(await _userManager.IsLockedOutAsync(user)) {
