@@ -24,7 +24,7 @@
     "Microsoft.AspNetCore.Identity": "1.0.0-rc2-final",
     "RigoFunc.ApiCore": "1.0.4",
     "RigoFunc.OAuth": "1.0.2",
-    "RigoFunc.Utils": "1.0.1"
+    "RigoFunc.Utils": "1.0.2"
   },
 
   "frameworks": {

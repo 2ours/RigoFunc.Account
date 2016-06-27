@@ -234,12 +234,13 @@ namespace RigoFunc.Account.Services {
                     throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
                 }
 
-                var password = $"{GenericUtil.UniqueKey()}@520";
+                var password = $"{GenericUtil.UniqueKey(3)}@{model.Code}";
 
                 // must have a constructor with only one user name parameter.
                 user = Activator.CreateInstance(typeof(TUser), model.PhoneNumber) as TUser;
 
-                var result = await _userManager.CreateAsync(user, password);
+                // why md5 here? because we should force APP or web to MD5 their plain password
+                var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
                 if (!result.Succeeded) {
                     HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
                 }
