@@ -106,14 +106,12 @@ namespace RigoFunc.Account.Services {
 
             return OAuthUser.FromUser(userPrincipal);
         }
-        
+
         /// <summary>
         /// Sets a flag indicating whether the specified user is locked out, as an asynchronous operation.
         /// </summary>
         /// <param name="model">The model.</param>
-        /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, the <see cref="IdentityResult"/> of the operation
-        /// </returns>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, the result contain a bool indicating whether succeeded.</returns>
         public async Task<bool> LockoutAsync(LockoutModel model) {
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null) {
@@ -134,12 +132,55 @@ namespace RigoFunc.Account.Services {
         }
 
         /// <summary>
+        /// Creates  a new user asynchronous. This method will not require end-user to provide the send code to their phone number and will send a random password to their phone.
+        /// </summary>
+        /// <param name="model">The register model.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, the result contain a bool indicating whether succeeded.</returns>
+        public async Task<bool> CreateAsync(RegisterModel model) {
+            var user = await _userManager.FindByNameAsync(model.UserName ?? model.PhoneNumber);
+            if (user != null) {
+                throw new ArgumentException(string.Format(Resources.PhoneNumberHadBeenRegister, model.PhoneNumber));
+            }
+
+            // must have a constructor with only one user name parameter.
+            user = Activator.CreateInstance(typeof(TUser), model.UserName ?? model.PhoneNumber) as TUser;
+
+            // why md5 here? because we should force APP or web to MD5 their plain password
+            var password = model.Password ?? GenericUtil.EncryptMD5($"{GenericUtil.UniqueKey(3)}@{model.Code ?? GenerateCode(model.PhoneNumber)}");
+            var result = await _userManager.CreateAsync(user, password);
+            if (!result.Succeeded) {
+                HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+            }
+
+            // set phone number.
+            if (_userManager.SupportsUserPhoneNumber) {
+                result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
+                if (!result.Succeeded) {
+                    HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                }
+            }
+
+            SendSmsResult smsResult;
+            if (string.IsNullOrWhiteSpace(_options.PasswordSmsTemplate)) {
+                smsResult = await _smsSender.SendSmsAsync(model.PhoneNumber, password);
+            }
+            else {
+                smsResult = await _smsSender.SendSmsAsync(_options.PasswordSmsTemplate, model.PhoneNumber, Tuple.Create("password", password));
+            }
+            if (!smsResult.IsSuccessSend) {
+                _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, smsResult.ErrorMessage));
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Registers a new user asynchronous.
         /// </summary>
         /// <param name="model">The register model.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the register operation. Task result contains the register response.</returns>
         public async Task<IResponse> RegisterAsync(RegisterModel model) {
-            var user = await _userManager.FindByNameAsync(model.PhoneNumber);
+            var user = await _userManager.FindByNameAsync(model.UserName ?? model.PhoneNumber);
             if (user != null) {
                 throw new ArgumentException(string.Format(Resources.PhoneNumberHadBeenRegister, model.PhoneNumber));
             }
@@ -149,7 +190,7 @@ namespace RigoFunc.Account.Services {
             }
 
             // must have a constructor with only one user name parameter.
-            user = Activator.CreateInstance(typeof(TUser), model.PhoneNumber) as TUser;
+            user = Activator.CreateInstance(typeof(TUser), model.UserName ?? model.PhoneNumber) as TUser;
 
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded) {

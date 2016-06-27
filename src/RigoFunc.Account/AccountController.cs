@@ -36,6 +36,16 @@ namespace RigoFunc.Account {
             return await _service.LockoutAsync(model);
         }
 
+        //[Authrize]
+        [HttpPost("[action]")]
+        public async Task<bool> Create([FromBody]RegisterModel model) {
+            if (model == null) {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            return await _service.CreateAsync(model);
+        }
+
         [HttpPost("[action]")]
         public async Task<IResponse> Register([FromBody]RegisterModel model) {
             if (model == null) {

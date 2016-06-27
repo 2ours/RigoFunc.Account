@@ -17,10 +17,14 @@ namespace RigoFunc.Account.Services {
         /// Sets a flag indicating whether the specified user is locked out, as an asynchronous operation.
         /// </summary>
         /// <param name="model">The model.</param>
-        /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, the <see cref="IdentityResult"/> of the operation
-        /// </returns>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, the result contain a bool indicating whether succeeded.</returns>
         Task<bool> LockoutAsync(LockoutModel model);
+        /// <summary>
+        /// Creates  a new user asynchronous. This method will not require end-user to provide the send code to their phone number and will send a random password to their phone.
+        /// </summary>
+        /// <param name="model">The register model.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, the result contain a bool indicating whether succeeded.</returns>
+        Task<bool> CreateAsync(RegisterModel model);
         /// <summary>
         /// Registers a new user asynchronous.
         /// </summary>
