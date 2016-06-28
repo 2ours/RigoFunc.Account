@@ -22,8 +22,8 @@
     "NETStandard.Library": "1.6.0",
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
     "Microsoft.AspNetCore.Identity": "1.0.0",
-    "RigoFunc.ApiCore": "1.0.6",
-    "RigoFunc.Utils": "1.0.2"
+    "RigoFunc.ApiCore": "1.0.7",
+    "RigoFunc.Utils": "1.0.3"
   },
 
   "frameworks": {
