@@ -101,7 +101,7 @@ namespace RigoFunc.Account {
         }
 
         [HttpPost("[action]")]
-        public async Task<bool> Update([FromBody]OAuthUser model) {
+        public async Task<bool> Update([FromBody]UpdateUserClaimsModel model) {
             if (model == null) {
                 throw new ArgumentNullException(nameof(model));
             }

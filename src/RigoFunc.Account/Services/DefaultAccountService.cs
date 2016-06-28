@@ -384,13 +384,17 @@ namespace RigoFunc.Account.Services {
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the reset operation.</returns>
-        public async Task<bool> UpdateAsync(OAuthUser model) {
+        public async Task<bool> UpdateAsync(UpdateUserClaimsModel model) {
             var user = await _userManager.FindByIdAsync(model.Id.ToString());
             if (user == null) {
                 throw new ArgumentException(string.Format(Resources.NotFoundUserById, model.Id));
             }
 
-            var result = await _userManager.AddClaimsAsync(user, model.ToClaims());
+            var claims = model.ToClaims();
+            // remove
+            var result = await _userManager.RemoveClaimsAsync(user, claims);
+            // add again
+            result = await _userManager.AddClaimsAsync(user, model.ToClaims());
             if (!result.Succeeded) {
                 HandleErrors(result, Resources.UpdateUserFailed);
             }

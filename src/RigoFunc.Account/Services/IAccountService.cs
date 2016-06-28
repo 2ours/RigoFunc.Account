@@ -66,7 +66,7 @@ namespace RigoFunc.Account.Services {
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the reset operation.</returns>
-        Task<bool> UpdateAsync(OAuthUser model);
+        Task<bool> UpdateAsync(UpdateUserClaimsModel model);
         /// <summary>
         /// Binds the open ID for the specified user asynchronous.
         /// </summary>
