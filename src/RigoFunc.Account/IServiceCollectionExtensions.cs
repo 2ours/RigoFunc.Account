@@ -15,20 +15,20 @@ namespace Microsoft.Extensions.DependencyInjection {
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="ApiOptions"/>.</param>
         /// <returns>The services available in the application.</returns>
-        public static IServiceCollection UseDefaultAccountService<TUser>(this IServiceCollection services, Action<ApiOptions> setupAction)
+        public static IServiceCollection UseDefaultAccountService<TUser>(this IServiceCollection services, Action<ApiOptions> setupAction = null)
             where TUser : class {
             // TODO: have any better way? Such as define an IUser { string UserName { get; set; } } interface? and than with constraint where TUser : IUser
             // check the pre-requirement
             var constructors = typeof(TUser).GetTypeInfo().DeclaredConstructors;
-            var found = false; 
+            var found = false;
             foreach (var ctor in constructors) {
                 var parameters = ctor.GetParameters();
-                if(parameters == null || parameters.Length != 1) {
+                if (parameters == null || parameters.Length != 1) {
                     continue;
                 }
 
                 var parameter = parameters[0];
-                if(parameter.ParameterType == typeof(string) && parameter.Name.Equals("userName", StringComparison.CurrentCultureIgnoreCase)) {
+                if (parameter.ParameterType == typeof(string) && parameter.Name.Equals("userName", StringComparison.CurrentCultureIgnoreCase)) {
                     found = true;
                 }
             }
@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection {
             if (setupAction != null) {
                 services.Configure(setupAction);
             }
-            
+
             services.AddTransient<IAccountService, DefaultAccountService<TUser>>();
 
             return services;
