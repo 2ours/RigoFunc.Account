@@ -453,6 +453,11 @@ namespace RigoFunc.Account.Services {
                 throw new ArgumentException("cannot login with weixin open id.");
             }
 
+            // cannot login if the user had been lockedout
+            if(await _userManager.IsLockedOutAsync(user)) {
+                throw new Exception(Resources.LockedOutUser);
+            }
+
             await _signInManager.SignInAsync(user, isPersistent: false);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
