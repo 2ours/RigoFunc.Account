@@ -18,3 +18,7 @@ api/account/register
 }
 ```
 
+# Swagger UI to view api
+
+- run Host Project
+- http://localhost:57567/swagger/ui
