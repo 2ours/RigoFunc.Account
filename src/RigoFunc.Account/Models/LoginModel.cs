@@ -5,7 +5,7 @@
         /// </summary>
         public string UserName { get; set; }
         /// <summary>
-        /// 密码.
+        /// 密码.MD5加密
         /// </summary>
         public string Password { get; set; }
         /// <summary>
