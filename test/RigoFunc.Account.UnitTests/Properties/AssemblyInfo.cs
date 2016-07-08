@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RigoFunc.Account")]
+[assembly: AssemblyProduct("RigoFunc.Account.UnitTests")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -16,5 +16,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("603226f2-3037-4990-8c9a-b0990b811ecd")]
-[assembly:InternalsVisibleTo("RigoFunc.Account.UnitTests")]
+[assembly: Guid("fe688369-a92f-4f77-bfe6-064147e0a97c")]

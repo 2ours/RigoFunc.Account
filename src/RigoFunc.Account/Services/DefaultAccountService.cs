@@ -496,12 +496,12 @@ namespace RigoFunc.Account.Services {
             return ApiResponse.FromTokenResponse(response);
         }
 
-        private string GenerateCode(string phoneNumber) {
+        internal string GenerateCode(string phoneNumber) {
             var securityStamp = Encoding.Unicode.GetBytes(DefaultSecurityStamp);
             return Rfc6238Service.GenerateCode(securityStamp, phoneNumber).ToString(CultureInfo.InvariantCulture);
         }
 
-        private bool ValidateCode(string token, string phoneNumber) {
+        internal bool ValidateCode(string token, string phoneNumber) {
             var securityStamp = Encoding.Unicode.GetBytes(DefaultSecurityStamp);
             int code;
             if (securityStamp != null && int.TryParse(token, out code)) {
