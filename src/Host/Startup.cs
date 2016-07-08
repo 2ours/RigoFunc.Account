@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Reflection;
 using Host.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RigoFunc.Account;
 using Swashbuckle.Swagger.Model;
 
 namespace Host {
@@ -23,28 +22,27 @@ namespace Host {
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            // Add framework services.
             services.UseDefaultAccountService<ApplicationUser>();
-            services.AddMvc();
 
+            services.AddMvcCore().AddApiExplorer();
+
+            var xmlDocPath = GetXmlDocPath(typeof(AccountController).GetTypeInfo());
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>
             {
                 options.SingleApiVersion(new Info {
                     Version = "v1",
-                    Title = "Example API",
-                    Description = "An Example API by Jesse",
-                    TermsOfService = "None"
+                    Title = "Account Api",
+                    Description = "Account Api documentation",
+                    TermsOfService = "Account Api"
                 });
-                options.IncludeXmlComments(@".\bin\Debug\netcoreapp1.0\RigoFunc.Account.xml");
+                options.IncludeXmlComments(xmlDocPath);
                 options.DescribeAllEnumsAsStrings();
                 //options.OperationFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlActionComments(pathToDoc));
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -53,21 +51,21 @@ namespace Host {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
-            else {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
             app.UseStaticFiles();
-
-            app.UseMvc(routes => {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
 
             //swagger
             app.UseSwagger();
             app.UseSwaggerUi();
+        }
+
+        private static string GetXmlDocPath(TypeInfo typeInfo) {
+            var assembly = typeInfo.Assembly;
+            var assemblyName = assembly.GetName();
+            var assemblyPath = Path.GetDirectoryName(assembly.Location);
+            var xmlDocPath = Path.Combine(assemblyPath, assemblyName.Name + ".xml");
+
+            return xmlDocPath;
         }
     }
 }
