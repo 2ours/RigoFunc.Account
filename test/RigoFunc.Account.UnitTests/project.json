@@ -6,7 +6,9 @@
   "testRunner": "xunit",
   "dependencies": {
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
+    "Host": "1.0.0-*",
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
+    "Microsoft.AspNetCore.TestHost": "1.0.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.NETCore.App": {
