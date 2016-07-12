@@ -16,7 +16,11 @@
   },
   "buildOptions": {
     "optimize": true,
-    "xmlDoc": true
+    "nowarn": [
+      "CS1591"
+    ],
+    "xmlDoc": true,
+    "warningsAsErrors": true
   },
   "dependencies": {
     "NETStandard.Library": "1.6.0",
