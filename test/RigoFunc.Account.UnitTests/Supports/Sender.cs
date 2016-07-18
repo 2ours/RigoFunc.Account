@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RigoFunc.ApiCore.Services;
+using Love.Net.Services;
 
 namespace RigoFunc.Account.UnitTests.Supports {
     public class Sender : IEmailSender, ISmsSender {
@@ -10,7 +8,7 @@ namespace RigoFunc.Account.UnitTests.Supports {
             return null;
         }
 
-        public Task<SendSmsResult> SendSmsAsnyc(string phoneNumber, string message) {
+        public Task<SendSmsResult> SendSmsAsync(string phoneNumber, string message) {
             return null;
         }
 
