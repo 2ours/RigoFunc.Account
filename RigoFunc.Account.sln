@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DA301DC6-8
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RigoFunc.Account.UnitTests", "test\RigoFunc.Account.UnitTests\RigoFunc.Account.UnitTests.xproj", "{FE688369-A92F-4F77-BFE6-064147E0A97C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RigoFunc.Account.IntergrationTests", "test\RigoFunc.Account.IntergrationTests\RigoFunc.Account.IntergrationTests.xproj", "{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{FE688369-A92F-4F77-BFE6-064147E0A97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE688369-A92F-4F77-BFE6-064147E0A97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE688369-A92F-4F77-BFE6-064147E0A97C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,5 +51,6 @@ Global
 		{603226F2-3037-4990-8C9A-B0990B811ECD} = {5F877805-1FC7-4895-B04C-417EBD923755}
 		{A65FA5CB-A363-4F04-AC2F-88DE842E2892} = {5F877805-1FC7-4895-B04C-417EBD923755}
 		{FE688369-A92F-4F77-BFE6-064147E0A97C} = {DA301DC6-86B9-4C60-A0EC-012DEE6193D1}
+		{99EE1765-AB1F-4E51-9788-A4D4B1CB7797} = {DA301DC6-86B9-4C60-A0EC-012DEE6193D1}
 	EndGlobalSection
 EndGlobal

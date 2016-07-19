@@ -17,8 +17,13 @@ Account Api abstraction library that uses ASP.NET Core Identity as its identity 
 
 # Usage
 
-```
-services.UseDefaultAccountService();
+```csharp
+// Startup.cs
+public void ConfigureServices(IServiceCollection services) {
+
+    services.UseDefaultAccountService<ApplicationUser>();
+
+}
 ```
 ```
 POST:

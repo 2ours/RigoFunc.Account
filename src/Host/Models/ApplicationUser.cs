@@ -4,7 +4,7 @@ namespace Host.Models {
     public class ApplicationUser : IdentityUser {
         public ApplicationUser() { }
 
-        public ApplicationUser(string userName): this() {
+        public ApplicationUser(string userName) : this() {
             UserName = UserName;
         }
     }
