@@ -4,6 +4,11 @@
 
 Account Api abstraction library that uses ASP.NET Core Identity as its identity management.
 
+# Install
+[nuget package](https://www.nuget.org/packages/RigoFunc.Account/)
+
+`Install-Package RigoFunc.Account`
+
 # Usage
 
 ```
@@ -21,4 +26,4 @@ api/account/register
 # Swagger UI to view api
 
 - run Host Project
-- http://localhost:57567/swagger/ui
+- open [http://localhost:57567/swagger/ui](http://localhost:57567/swagger/ui)
