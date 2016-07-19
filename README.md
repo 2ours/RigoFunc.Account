@@ -4,6 +4,11 @@
 
 Account Api abstraction library that uses ASP.NET Core Identity as its identity management.
 
+# Feature
+- [x] 使用手机号码注册(包含发送验证码)
+- [x] 使用用户名密码登录
+- [ ] 使用验证码登录(包含判断是否可以使用验证码登录,以及该功能的开启设置)
+
 # Install
 [nuget package](https://www.nuget.org/packages/RigoFunc.Account/)
 
