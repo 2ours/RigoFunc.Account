@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.7-*",
   "description": "Account Api abstraction library that uses ASP.NET Core Identity as its claims identity management.",
   "authors": [ "rigofunc", "rigofunc@outlook.com", "lotosbin", "lotosbin@gmail.com" ],
@@ -28,7 +28,7 @@
     "Microsoft.AspNetCore.Identity": "1.0.0",
     "Love.Net.Services": "1.0.2",
     "RigoFunc.OAuth": "1.0.4",
-    "RigoFunc.Utils": "1.0.3"
+    "RigoFunc.Utils": "1.0.4"
   },
 
   "frameworks": {
