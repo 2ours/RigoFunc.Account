@@ -5,7 +5,7 @@ namespace Host.Models {
         public ApplicationUser() { }
 
         public ApplicationUser(string userName) : this() {
-            UserName = UserName;
+            UserName = userName;
         }
     }
 }

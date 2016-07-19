@@ -1,34 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Host;
+using Host.Models;
+using Love.Net.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RigoFunc.Account.IntergrationTests {
     public class VerifyCodeTests {
         private TestServer _server;
         private HttpClient _client;
+        private Sender _sender;
 
         public VerifyCodeTests() {
             _server = new TestServer(new WebHostBuilder()
     .UseStartup<Startup>());
             _client = _server.CreateClient();
-
+            _sender = _server.Host.Services.GetService<ISmsSender>() as Sender;
         }
         [Fact]
         public async Task SendCode_VerifyCode_Test() {
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response = await _client.PostAsJsonAsync("api/Account/SendCode", new { phonenumber = "18121629620" });
             response.EnsureSuccessStatusCode();
             var s = await response.Content.ReadAsStringAsync();
-
-            var responseMessage = await _client.PostAsJsonAsync("api/account/verifycode", new { phonenumber = "18121629620", code = "123456" });
+            Debug.WriteLine($"code:{_sender.Code}");
+            var responseMessage = await _client.PostAsJsonAsync("api/account/verifycode", new { phonenumber = "18121629620", code = _sender.Code });
             responseMessage.EnsureSuccessStatusCode();
             var r = await responseMessage.Content.ReadAsAsync<Rootobject>();
             Assert.NotNull(r);

@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DA301DC6-8
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RigoFunc.Account.UnitTests", "test\RigoFunc.Account.UnitTests\RigoFunc.Account.UnitTests.xproj", "{FE688369-A92F-4F77-BFE6-064147E0A97C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RigoFunc.Account.IntergrationTests", "test\RigoFunc.Account.IntergrationTests\RigoFunc.Account.IntergrationTests.xproj", "{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RigoFunc.Account.IntegrationTests", "test\RigoFunc.Account.IntegrationTests\RigoFunc.Account.IntegrationTests.xproj", "{99EE1765-AB1F-4E51-9788-A4D4B1CB7797}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

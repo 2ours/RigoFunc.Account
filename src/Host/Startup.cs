@@ -27,14 +27,18 @@ namespace Host {
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddTransient<IEmailSender, Sender>();
-            services.AddTransient<ISmsSender, Sender>();
+            services.AddSingleton<ISmsSender, Sender>();
             services.AddDbContext<ApplicationDbContext>(options => {
                 options.UseInMemoryDatabase();
             });
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.UseDefaultAccountService<ApplicationUser>();
-            services.AddMvcCore().AddApiExplorer();
+            services.AddMvcCore().AddApiExplorer().AddJsonFormatters();
 
             var xmlDocPath = GetXmlDocPath(typeof(AccountController).GetTypeInfo());
             services.AddSwaggerGen();
@@ -49,8 +53,6 @@ namespace Host {
                 options.DescribeAllEnumsAsStrings();
                 //options.OperationFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlActionComments(pathToDoc));
             });
-
-            services.AddMvcCore();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
