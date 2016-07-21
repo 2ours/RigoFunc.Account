@@ -34,7 +34,7 @@ api/account/register
 }
 ```
 
-# Swagger UI to view api
+# **Love.Net.Help** to view api
 
 - run Host Project
-- open [http://localhost:57567/swagger/ui](http://localhost:57567/swagger/ui)
+- open [http://localhost:57567/api/help/ui](http://localhost:57567/api/help/ui)

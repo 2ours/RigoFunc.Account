@@ -1,16 +1,12 @@
-﻿using System.IO;
-using System.Reflection;
-using Host.Models;
-using Love.Net.Services;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RigoFunc.Account;
-using Swashbuckle.Swagger.Model;
 using Microsoft.EntityFrameworkCore;
+using Love.Net.Services;
+using Host.Models;
 
 namespace Host {
     public class Startup {
@@ -36,23 +32,10 @@ namespace Host {
                 options.Password.RequireUppercase = false;
 
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.UseDefaultAccountService<ApplicationUser>();
-            services.AddMvcCore().AddApiExplorer().AddJsonFormatters();
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var xmlDocPath = GetXmlDocPath(typeof(AccountController).GetTypeInfo());
-            services.AddSwaggerGen();
-            services.ConfigureSwaggerGen(options => {
-                options.SingleApiVersion(new Info {
-                    Version = "v1",
-                    Title = "Account Api",
-                    Description = "Account Api documentation",
-                    TermsOfService = "Account Api"
-                });
-                options.IncludeXmlComments(xmlDocPath);
-                options.DescribeAllEnumsAsStrings();
-                //options.OperationFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlActionComments(pathToDoc));
-            });
+            services.UseDefaultAccountService<ApplicationUser>();
+            services.AddMvcCore().AddJsonFormatters().AddApiHelp();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
@@ -64,26 +47,13 @@ namespace Host {
                 app.UseBrowserLink();
             }
 
-            app.UseStaticFiles();
-
-            //swagger
-            app.UseSwagger();
-            app.UseSwaggerUi();
+            app.UseApiHelpUI();
 
             // identity
             app.UseIdentity();
 
             //mvc
             app.UseMvcWithDefaultRoute();
-        }
-
-        private static string GetXmlDocPath(TypeInfo typeInfo) {
-            var assembly = typeInfo.Assembly;
-            var assemblyName = assembly.GetName();
-            var assemblyPath = Path.GetDirectoryName(assembly.Location);
-            var xmlDocPath = Path.Combine(assemblyPath, assemblyName.Name + ".xml");
-
-            return xmlDocPath;
         }
     }
 }
