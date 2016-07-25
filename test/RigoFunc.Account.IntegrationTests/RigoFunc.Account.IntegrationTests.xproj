@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>99ee1765-ab1f-4e51-9788-a4d4b1cb7797</ProjectGuid>
-    <RootNamespace>RigoFunc.Account.IntergrationTests</RootNamespace>
+    <RootNamespace>RigoFunc.Account.IntegrationTests</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>

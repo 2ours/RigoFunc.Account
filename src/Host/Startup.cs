@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Host.Mocks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Love.Net.Services;
 using Host.Models;
+using RigoFunc.Account.Services;
 
 namespace Host {
     public class Startup {
@@ -32,9 +34,11 @@ namespace Host {
                 options.Password.RequireUppercase = false;
 
             })
+            .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.UseDefaultAccountService<ApplicationUser>();
+            services.AddTransient<IAccessTokenProvider, MockAccessTokenProvider>();
             services.AddMvcCore().AddJsonFormatters().AddApiHelp();
         }
 

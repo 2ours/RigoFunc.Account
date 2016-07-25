@@ -5,9 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityModel.Client;
 using Love.Net.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,16 +19,16 @@ namespace RigoFunc.Account.Services {
     /// Represents the default implementation of the <see cref="IAccountService"/> interface.
     /// </summary>
     /// <typeparam name="TUser">The type of the t user.</typeparam>
-    public class DefaultAccountService<TUser> : IAccountService where TUser: class {
+    public class DefaultAccountService<TUser> : IAccountService where TUser : class {
         private readonly UserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
-        private readonly HttpContext _httpContext;
         private readonly ApiOptions _options;
         private const string DefaultSecurityStamp = "022a9e42-9509-4aa6-8a0a-c34a1f405c61";
         private const string WChatLoginProvider = "wxLoginProvider";
+        private IAccessTokenProvider _accessTokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultAccountService{TUser}"/> class.
@@ -40,22 +38,22 @@ namespace RigoFunc.Account.Services {
         /// <param name="emailSender">The email sender.</param>
         /// <param name="smsSender">The SMS sender.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        /// <param name="contextAccessor">The context accessor.</param>
         /// <param name="options">The options.</param>
+        /// <param name="accessTokenProvider"></param>
         public DefaultAccountService(UserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
             ILoggerFactory loggerFactory,
-            IHttpContextAccessor contextAccessor,
-            IOptions<ApiOptions> options) {
+            IOptions<ApiOptions> options,
+            IAccessTokenProvider accessTokenProvider) {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
+            _accessTokenProvider = accessTokenProvider;
             _options = options.Value;
-            _logger = loggerFactory.CreateLogger("AccountService"); ;
-            _httpContext = contextAccessor.HttpContext;
+            _logger = loggerFactory.CreateLogger(nameof(DefaultAccountService<TUser>));
         }
 
         /// <summary>
@@ -208,7 +206,7 @@ namespace RigoFunc.Account.Services {
             // sign in
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return await RequestTokenAsync(model.PhoneNumber, model.Password);
+            return await _accessTokenProvider.RequestTokenAsync(model.PhoneNumber, model.Password);
         }
 
         /// <summary>
@@ -220,9 +218,9 @@ namespace RigoFunc.Account.Services {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded) {
                 _logger.LogInformation(1, "User logged in.");
-                return await RequestTokenAsync(model.UserName, model.Password);
+                return await _accessTokenProvider.RequestTokenAsync(model.UserName, model.Password);
             }
-            else if(result == SignInResult.LockedOut) {
+            else if (result == SignInResult.LockedOut) {
                 throw new Exception(Resources.LockedOutUser);
             }
 
@@ -308,10 +306,10 @@ namespace RigoFunc.Account.Services {
                 // sign in
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                return await RequestTokenAsync(model.PhoneNumber, GenericUtil.EncryptMD5(password));
+                return await _accessTokenProvider.RequestTokenAsync(model.PhoneNumber, GenericUtil.EncryptMD5(password));
             }
             else {
-                if(await _userManager.IsLockedOutAsync(user)) {
+                if (await _userManager.IsLockedOutAsync(user)) {
                     throw new Exception(Resources.LockedOutUser);
                 }
 
@@ -320,7 +318,7 @@ namespace RigoFunc.Account.Services {
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                var token = await RequestTokenAsync(model.PhoneNumber, model.Code);
+                var token = await _accessTokenProvider.RequestTokenAsync(model.PhoneNumber, model.Code);
                 if (token.IsError) {
                     _logger.LogError(token.ToString());
 
@@ -376,7 +374,7 @@ namespace RigoFunc.Account.Services {
 
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return await RequestTokenAsync(model.PhoneNumber, model.Password);
+            return await _accessTokenProvider.RequestTokenAsync(model.PhoneNumber, model.Password);
         }
 
         /// <summary>
@@ -454,7 +452,7 @@ namespace RigoFunc.Account.Services {
             }
 
             // cannot login if the user had been lockedout
-            if(await _userManager.IsLockedOutAsync(user)) {
+            if (await _userManager.IsLockedOutAsync(user)) {
                 throw new Exception(Resources.LockedOutUser);
             }
 
@@ -462,7 +460,7 @@ namespace RigoFunc.Account.Services {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-            var response = await RequestTokenAsync(userName, code);
+            var response = await _accessTokenProvider.RequestTokenAsync(userName, code);
             if (response.IsError) {
                 _logger.LogError(response.ToString());
 
@@ -472,29 +470,7 @@ namespace RigoFunc.Account.Services {
             return response;
         }
 
-        private async Task<IResponse> RequestTokenAsync(string userName, string password) {
-            var endpoint = $"{_httpContext.Request.Scheme}://{_httpContext.Request.Host.Value}/connect/token";
 
-            _logger.LogInformation($"token_endpoint: {endpoint}");
-
-            string clientId = _httpContext.Request.Headers[ApiConstants.ClientId];
-            if (string.IsNullOrWhiteSpace(clientId)) {
-                clientId = _options.DefaultClientId;
-            }
-            string clientSecret = _httpContext.Request.Headers[ApiConstants.ClientSecret];
-            if (string.IsNullOrWhiteSpace(clientSecret)) {
-                clientSecret = _options.DefaultClientSecret;
-            }
-            string scope = _httpContext.Request.Headers[ApiConstants.Scope];
-            if (string.IsNullOrWhiteSpace(scope)) {
-                scope = _options.DefaultScope;
-            }
-
-            var client = new TokenClient(endpoint, clientId, clientSecret);
-            var response = await client.RequestResourceOwnerPasswordAsync(userName, password, scope);
-
-            return ApiResponse.FromTokenResponse(response);
-        }
 
         internal string GenerateCode(string phoneNumber) {
             var securityStamp = Encoding.Unicode.GetBytes(DefaultSecurityStamp);

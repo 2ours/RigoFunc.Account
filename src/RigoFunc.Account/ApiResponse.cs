@@ -4,7 +4,7 @@ namespace RigoFunc.Account {
     /// <summary>
     /// Represents the default implementation of the <see cref="IResponse"/> interface.
     /// </summary>
-    internal class ApiResponse : IResponse {
+    public class ApiResponse : IResponse {
         /// <summary>
         /// Gets the access token.
         /// </summary>
