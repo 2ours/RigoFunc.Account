@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection {
                 services.Configure(setupAction);
             }
 
-            services.AddTransient<IAccessTokenProvider, AccessTokenProvider>();
+            services.AddTransient<IAccessTokenProvider, IdentityServerAccessTokenProvider>();
             services.AddTransient<IAccountService, DefaultAccountService<TUser>>();
 
             return services;
