@@ -24,7 +24,7 @@ namespace RigoFunc.Account.Services {
         private readonly SignInManager<TUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
-        private readonly ILogger _logger;
+        private readonly ILogger<DefaultAccountService<TUser>> _logger;
         private readonly ApiOptions _options;
         private const string DefaultSecurityStamp = "022a9e42-9509-4aa6-8a0a-c34a1f405c61";
         private const string WChatLoginProvider = "wxLoginProvider";
@@ -37,14 +37,14 @@ namespace RigoFunc.Account.Services {
         /// <param name="signInManager">The sign in manager.</param>
         /// <param name="emailSender">The email sender.</param>
         /// <param name="smsSender">The SMS sender.</param>
-        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="options">The options.</param>
         /// <param name="accessTokenProvider"></param>
         public DefaultAccountService(UserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory,
+            ILogger<DefaultAccountService<TUser>> logger,
             IOptions<ApiOptions> options,
             IAccessTokenProvider accessTokenProvider) {
             _userManager = userManager;
@@ -53,7 +53,7 @@ namespace RigoFunc.Account.Services {
             _smsSender = smsSender;
             _accessTokenProvider = accessTokenProvider;
             _options = options.Value;
-            _logger = loggerFactory.CreateLogger(nameof(DefaultAccountService<TUser>));
+            _logger = logger;
         }
 
         /// <summary>
