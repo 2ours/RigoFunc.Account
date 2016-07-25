@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5F877805-1FC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F5D30FF-00EF-461A-A329-CD663DF2C5D7}"
 	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+		build.ps1 = build.ps1
 		global.json = global.json
 		nuget-push.bat = nuget-push.bat
 		nuget-push.ps1 = nuget-push.ps1
