@@ -6,15 +6,15 @@ using Microsoft.Extensions.Options;
 
 namespace RigoFunc.Account.Services {
     public class IdentityServerAccessTokenProvider : IAccessTokenProvider {
-        private readonly ILogger _logger;
+        private readonly ILogger<IdentityServerAccessTokenProvider> _logger;
         private readonly HttpContext _httpContext;
         private readonly ApiOptions _options;
 
         public IdentityServerAccessTokenProvider(IHttpContextAccessor contextAccessor,
- IOptions<ApiOptions> options,
- ILoggerFactory loggerFactory) {
+            IOptions<ApiOptions> options,
+            ILogger<IdentityServerAccessTokenProvider> logger) {
             _httpContext = contextAccessor.HttpContext;
-            _logger = loggerFactory.CreateLogger(nameof(IdentityServerAccessTokenProvider));
+            _logger = logger;
             _options = options.Value;
         }
 
