@@ -3,11 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Host;
 using Host.Models;
-using Love.Net.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
+using Love.Net.Core;
 
 namespace RigoFunc.Account.IntegrationTests {
     public class VerifyCodeTests {

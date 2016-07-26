@@ -5,7 +5,7 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
-using Love.Net.Services;
+using Love.Net.Core;
 
 namespace RigoFunc.Account.UnitTests.Services {
     public class DefaultAccountServiceTests {

@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Love.Net.Services;
+using Love.Net.Core;
 
 namespace RigoFunc.Account.UnitTests.Supports {
     public class Sender : IEmailSender, ISmsSender {
-        public Task SendEmailAsync(string email, string subject, string message) {
-            return null;
+        public string Code { get; set; }
+        public Task<InvokeResult> SendEmailAsync(string email, string subject, string message) {
+            return Task.FromResult(InvokeResult.Success);
         }
 
-        public Task<SendSmsResult> SendSmsAsync(string phoneNumber, string message) {
-            return null;
+        public Task<InvokeResult> SendSmsAsync(string phoneNumber, string message) {
+            Code = message;
+            return Task.FromResult(InvokeResult.Success);
         }
 
-        public Task<SendSmsResult> SendSmsAsync(string template, string phoneNumber, params Tuple<string, string>[] parameters) {
-            return null;
+        public Task<InvokeResult> SendSmsAsync(string template, string phoneNumber, params Tuple<string, string>[] parameters) {
+            Code = parameters[0].Item2;
+            return Task.FromResult(InvokeResult.Success);
         }
     }
 }

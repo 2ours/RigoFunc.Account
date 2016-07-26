@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityModel;
-using Love.Net.Services;
+using Love.Net.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,7 +22,6 @@ namespace RigoFunc.Account.Services {
     public class DefaultAccountService<TUser> : IAccountService where TUser : class {
         private readonly UserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
-        private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger<DefaultAccountService<TUser>> _logger;
         private readonly ApiOptions _options;
@@ -49,7 +48,6 @@ namespace RigoFunc.Account.Services {
             IAccessTokenProvider accessTokenProvider) {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _smsSender = smsSender;
             _accessTokenProvider = accessTokenProvider;
             _options = options.Value;
@@ -158,15 +156,16 @@ namespace RigoFunc.Account.Services {
                 }
             }
 
-            SendSmsResult smsResult;
+            InvokeResult invokeResult;
             if (string.IsNullOrWhiteSpace(_options.PasswordSmsTemplate)) {
-                smsResult = await _smsSender.SendSmsAsync(model.PhoneNumber, password);
+                invokeResult = await _smsSender.SendSmsAsync(model.PhoneNumber, password);
             }
             else {
-                smsResult = await _smsSender.SendSmsAsync(_options.PasswordSmsTemplate, model.PhoneNumber, Tuple.Create("password", password));
+                invokeResult = await _smsSender.SendSmsAsync(_options.PasswordSmsTemplate, model.PhoneNumber, Tuple.Create("password", password));
             }
-            if (!smsResult.IsSuccessSend) {
-                _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, smsResult.ErrorMessage));
+
+            if (!invokeResult.Succeeded) {
+                _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, invokeResult.Error.Message));
             }
 
             return true;
@@ -244,7 +243,7 @@ namespace RigoFunc.Account.Services {
                 code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
             }
 
-            SendSmsResult result;
+            InvokeResult result;
             if (string.IsNullOrWhiteSpace(_options.CodeSmsTemplate)) {
                 result = await _smsSender.SendSmsAsync(model.PhoneNumber, code);
             }
@@ -252,8 +251,8 @@ namespace RigoFunc.Account.Services {
                 result = await _smsSender.SendSmsAsync(_options.CodeSmsTemplate, model.PhoneNumber, Tuple.Create("code", code));
             }
 
-            if (!result.IsSuccessSend) {
-                _logger.LogError(string.Format(Resources.SendCodeFailed, model.PhoneNumber, result.ErrorMessage));
+            if (!result.Succeeded) {
+                _logger.LogError(string.Format(Resources.SendCodeFailed, model.PhoneNumber, result.Error.Message));
 
                 return false;
             }
@@ -292,15 +291,15 @@ namespace RigoFunc.Account.Services {
                     }
                 }
 
-                SendSmsResult smsResult;
+                InvokeResult invokeResult;
                 if (string.IsNullOrWhiteSpace(_options.PasswordSmsTemplate)) {
-                    smsResult = await _smsSender.SendSmsAsync(model.PhoneNumber, password);
+                    invokeResult = await _smsSender.SendSmsAsync(model.PhoneNumber, password);
                 }
                 else {
-                    smsResult = await _smsSender.SendSmsAsync(_options.PasswordSmsTemplate, model.PhoneNumber, Tuple.Create("password", password));
+                    invokeResult = await _smsSender.SendSmsAsync(_options.PasswordSmsTemplate, model.PhoneNumber, Tuple.Create("password", password));
                 }
-                if (!smsResult.IsSuccessSend) {
-                    _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, smsResult.ErrorMessage));
+                if (!invokeResult.Succeeded) {
+                    _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, invokeResult.Error.Message));
                 }
 
                 // sign in

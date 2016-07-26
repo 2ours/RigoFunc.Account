@@ -3,11 +3,11 @@
   "description": "Account Api abstraction library that uses ASP.NET Core Identity as its claims identity management.",
   "authors": [ "rigofunc", "rigofunc@outlook.com", "lotosbin", "lotosbin@gmail.com" ],
   "packOptions": {
-    "projectUrl": "https://github.com/xyting/RigoFunc.IdentityServer",
+    "projectUrl": "https://github.com/xyting/RigoFunc.Account",
     "licenseUrl": "",
     "repository": {
       "type": "git",
-      "url": "https://github.com/xyting/RigoFunc.IdentityServer.git"
+      "url": "https://github.com/xyting/RigoFunc.Account.git"
     },
     "tags": [
       "Account",
@@ -26,7 +26,7 @@
         "NETStandard.Library": "1.6.0",
         "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
         "Microsoft.AspNetCore.Identity": "1.0.0",
-        "Love.Net.Services": "1.0.4",
+        "Love.Net.Core": "1.0.0",
         "RigoFunc.OAuth": "1.0.4",
         "RigoFunc.Utils": "1.0.4"
     },

@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Host;
 using Host.Models;
-using Love.Net.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using RigoFunc.Account.Models;
-using RigoFunc.Account.Services;
 using Xunit.Abstractions;
+using Love.Net.Core;
 
 namespace RigoFunc.Account.IntegrationTests {
     public class ResetPasswordTests {

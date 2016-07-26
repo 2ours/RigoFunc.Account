@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using Love.Net.Services;
 using Host.Models;
 using RigoFunc.Account.Services;
+using Love.Net.Core;
 
 namespace Host {
     public class Startup {
