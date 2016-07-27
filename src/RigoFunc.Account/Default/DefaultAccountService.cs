@@ -4,16 +4,17 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using IdentityModel;
-using Love.Net.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using IdentityModel;
+using Love.Net.Core;
 using Newtonsoft.Json;
 using RigoFunc.Account.Models;
 using RigoFunc.Account.Services;
 using RigoFunc.OAuth;
 using RigoFunc.Utils;
+using System.Collections.Generic;
 
 namespace RigoFunc.Account.Default {
     /// <summary>
@@ -30,6 +31,7 @@ namespace RigoFunc.Account.Default {
         private const string DefaultSecurityStamp = "022a9e42-9509-4aa6-8a0a-c34a1f405c61";
         private const string WChatLoginProvider = "wxLoginProvider";
         private IAccessTokenProvider _accessTokenProvider;
+        private readonly InvokeErrorDescriber _errorDescriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultAccountService{TUser}"/> class.
@@ -41,13 +43,15 @@ namespace RigoFunc.Account.Default {
         /// <param name="logger">The logger.</param>
         /// <param name="options">The options.</param>
         /// <param name="accessTokenProvider"></param>
+        /// <param name="describer">The error describer</param>
         public DefaultAccountService(UserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
             IUserFactory<TUser> userFactory,
             ISmsSender smsSender,
             ILogger<DefaultAccountService<TUser>> logger,
             IOptions<ApiOptions> options,
-            IAccessTokenProvider accessTokenProvider) {
+            IAccessTokenProvider accessTokenProvider,
+            InvokeErrorDescriber describer = null) {
             _userManager = userManager;
             _signInManager = signInManager;
             _userFactory = userFactory;
@@ -55,6 +59,7 @@ namespace RigoFunc.Account.Default {
             _accessTokenProvider = accessTokenProvider;
             _options = options.Value;
             _logger = logger;
+            _errorDescriber = describer ?? new InvokeErrorDescriber();
         }
 
         /// <summary>
@@ -114,20 +119,20 @@ namespace RigoFunc.Account.Default {
         public async Task<bool> LockoutAsync(LockoutModel model) {
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null) {
-                throw new ArgumentNullException(string.Format(Resources.NotFoundUserByPhoneNumber, model.UserName));
+                _errorDescriber.UserNotFoundByPhoneNumber(model.UserName).Throw();
             }
 
             var result = await _userManager.SetLockoutEnabledAsync(user, model.Enabled);
-            if (result.Succeeded) {
-                if (model.Enabled) {
-                    // lockout a year
-                    result = await _userManager.SetLockoutEndDateAsync(user, model.LockoutEnd ?? DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(365)));
-                }
-
-                return true;
+            if (!result.Succeeded) {
+                _errorDescriber.UserLockoutFailure().Throw();
             }
 
-            throw new Exception(Resources.LockoutUserFailed);
+            if (model.Enabled) {
+                // lockout a year
+                result = await _userManager.SetLockoutEndDateAsync(user, model.LockoutEnd ?? DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(365)));
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -138,7 +143,7 @@ namespace RigoFunc.Account.Default {
         public async Task<bool> CreateAsync(RegisterModel model) {
             var user = await _userManager.FindByNameAsync(model.UserName ?? model.PhoneNumber);
             if (user != null) {
-                throw new ArgumentException(string.Format(Resources.PhoneNumberHadBeenRegister, model.PhoneNumber));
+                _errorDescriber.PhoneNumberHadBeenRegister(model.PhoneNumber).Throw();
             }
 
             user = _userFactory.CreateUser(model.UserName ?? model.PhoneNumber);
@@ -147,14 +152,18 @@ namespace RigoFunc.Account.Default {
             var password = model.Password ?? $"{GenericUtil.UniqueKey(3)}@{model.Code ?? GenerateCode(model.PhoneNumber)}";
             var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
             if (!result.Succeeded) {
-                HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
+                error.Details = HandleErrors(result);
+                error.Throw();
             }
 
             // set phone number.
             if (_userManager.SupportsUserPhoneNumber) {
                 result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!result.Succeeded) {
-                    HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                    var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
+                    error.Details = HandleErrors(result);
+                    error.Throw();
                 }
             }
 
@@ -167,7 +176,9 @@ namespace RigoFunc.Account.Default {
             }
 
             if (!invokeResult.Succeeded) {
-                _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, invokeResult.Error.Message));
+                var error = _errorDescriber.SendPasswordFailed();
+                error.Details = new[] { invokeResult.Error };
+                error.Throw();
             }
 
             return true;
@@ -181,24 +192,28 @@ namespace RigoFunc.Account.Default {
         public async Task<IResponse> RegisterAsync(RegisterModel model) {
             var user = await _userManager.FindByNameAsync(model.UserName ?? model.PhoneNumber);
             if (user != null) {
-                throw new ArgumentException(string.Format(Resources.PhoneNumberHadBeenRegister, model.PhoneNumber));
+                _errorDescriber.PhoneNumberHadBeenRegister(model.PhoneNumber).Throw();
             }
 
             if (!ValidateCode(model.Code, model.PhoneNumber)) {
-                throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
+                _errorDescriber.CodeInvalidOrTimeout(model.Code).Throw();
             }
 
             user = _userFactory.CreateUser(model.UserName ?? model.PhoneNumber);
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded) {
-                HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
+                error.Details = HandleErrors(result);
+                error.Throw();
             }
 
             // set phone number.
             if (_userManager.SupportsUserPhoneNumber) {
                 result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!result.Succeeded) {
-                    HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                    var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
+                    error.Details = HandleErrors(result);
+                    error.Throw();
                 }
             }
 
@@ -215,17 +230,14 @@ namespace RigoFunc.Account.Default {
         /// <returns>A <see cref="Task{TResult}"/> represents the login operation.</returns>
         public async Task<IResponse> LoginAsync(LoginModel model) {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-            if (result.Succeeded) {
-                _logger.LogInformation(1, "User logged in.");
-                return await _accessTokenProvider.RequestTokenAsync(model.UserName, model.Password);
-            }
-            else if (result == SignInResult.LockedOut) {
-                throw new Exception(Resources.LockedOutUser);
+            if (!result.Succeeded) {
+                if (result == SignInResult.LockedOut) {
+                    _errorDescriber.UserLoginFailureBecauseIsLockout().Throw();
+                }
+                _errorDescriber.PhoneNumberOrPasswordError().Throw();
             }
 
-            _logger.LogError(result.ToString());
-
-            throw new ArgumentException(Resources.PhoneNumberOrPasswordError);
+            return await _accessTokenProvider.RequestTokenAsync(model.UserName, model.Password);
         }
 
         /// <summary>
@@ -252,9 +264,9 @@ namespace RigoFunc.Account.Default {
             }
 
             if (!result.Succeeded) {
-                _logger.LogError(string.Format(Resources.SendCodeFailed, model.PhoneNumber, result.Error.Message));
-
-                return false;
+                var error = _errorDescriber.SendCodeFailure();
+                error.Details = new[] { result.Error };
+                error.Throw();
             }
 
             return true;
@@ -269,7 +281,7 @@ namespace RigoFunc.Account.Default {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
             if (user == null) {
                 if (!ValidateCode(model.Code, model.PhoneNumber)) {
-                    throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
+                    _errorDescriber.CodeInvalidOrTimeout(model.Code).Throw();
                 }
 
                 var password = $"{GenericUtil.UniqueKey(3)}@{model.Code}";
@@ -278,14 +290,18 @@ namespace RigoFunc.Account.Default {
                 // why md5 here? because we should force APP or web to MD5 their plain password
                 var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
                 if (!result.Succeeded) {
-                    HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                    var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
+                    error.Details = HandleErrors(result);
+                    error.Throw();
                 }
 
                 // set phone number.
                 if (_userManager.SupportsUserPhoneNumber) {
                     result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                     if (!result.Succeeded) {
-                        HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
+                        var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
+                        error.Details = HandleErrors(result);
+                        error.Throw();
                     }
                 }
 
@@ -297,7 +313,9 @@ namespace RigoFunc.Account.Default {
                     invokeResult = await _smsSender.SendSmsAsync(_options.PasswordSmsTemplate, model.PhoneNumber, Tuple.Create("password", password));
                 }
                 if (!invokeResult.Succeeded) {
-                    _logger.LogError(string.Format(Resources.SendPasswordFailed, model.PhoneNumber, invokeResult.Error.Message));
+                    var error = _errorDescriber.SendPasswordFailed();
+                    error.Details = new[] { invokeResult.Error };
+                    error.Throw();
                 }
 
                 // sign in
@@ -307,19 +325,17 @@ namespace RigoFunc.Account.Default {
             }
             else {
                 if (await _userManager.IsLockedOutAsync(user)) {
-                    throw new Exception(Resources.LockedOutUser);
+                    _errorDescriber.UserLoginFailureBecauseIsLockout().Throw();
                 }
 
                 if (!await _userManager.VerifyChangePhoneNumberTokenAsync(user, model.Code, model.PhoneNumber)) {
-                    throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
+                    _errorDescriber.CodeInvalidOrTimeout(model.Code).Throw();
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 var token = await _accessTokenProvider.RequestTokenAsync(model.PhoneNumber, model.Code);
                 if (token.IsError) {
-                    _logger.LogError(token.ToString());
-
-                    throw new ArgumentNullException(string.Format(Resources.LoginFailedWithCodeAndPhone, model.Code, model.PhoneNumber));
+                    _errorDescriber.PhoneNumberOrPasswordError().Throw();
                 }
 
                 return token;
@@ -334,7 +350,7 @@ namespace RigoFunc.Account.Default {
         public async Task<bool> ChangePasswordAsync(ChangePasswordModel model) {
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null) {
-                throw new ArgumentNullException(string.Format(Resources.NotFoundUserByPhoneNumber, model.UserName));
+                _errorDescriber.UserNotFoundByPhoneNumber(model.UserName).Throw();
             }
 
             var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
@@ -356,17 +372,19 @@ namespace RigoFunc.Account.Default {
         public async Task<IResponse> ResetPasswordAsync(ResetPasswordModel model) {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
             if (user == null) {
-                throw new ArgumentNullException(string.Format(Resources.NotFoundUserByPhoneNumber, model.PhoneNumber));
+                _errorDescriber.UserNotFoundByPhoneNumber(model.PhoneNumber).Throw();
             }
 
             if (!await _userManager.VerifyChangePhoneNumberTokenAsync(user, model.Code, model.PhoneNumber)) {
-                throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
+                _errorDescriber.CodeInvalidOrTimeout(model.Code).Throw();
             }
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, code, model.Password);
             if (!result.Succeeded) {
-                HandleErrors(result, string.Format(Resources.PasswordResetFailed, model.PhoneNumber));
+                var error = _errorDescriber.ResetPasswordFailure();
+                error.Details = HandleErrors(result);
+                error.Throw();
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
@@ -382,7 +400,7 @@ namespace RigoFunc.Account.Default {
         public async Task<bool> UpdateAsync(UpdateUserClaimsModel model) {
             var user = await _userManager.FindByIdAsync(model.Id.ToString());
             if (user == null) {
-                throw new ArgumentException(string.Format(Resources.NotFoundUserById, model.Id));
+                _errorDescriber.UserNotFoundById(model.Id.ToString()).Throw();
             }
 
             var claims = model.ToClaims();
@@ -391,7 +409,9 @@ namespace RigoFunc.Account.Default {
             // add again
             result = await _userManager.AddClaimsAsync(user, model.ToClaims());
             if (!result.Succeeded) {
-                HandleErrors(result, Resources.UpdateUserFailed);
+                var error = _errorDescriber.UserUpdateFailure();
+                error.Details = HandleErrors(result);
+                error.Throw();
             }
 
             return true;
@@ -419,7 +439,7 @@ namespace RigoFunc.Account.Default {
 
             user = await _userManager.FindByNameAsync(model.PhoneNumber);
             if (user == null) {
-                throw new ArgumentException(string.Format(Resources.NotFoundUserByPhoneNumber, model.PhoneNumber));
+                _errorDescriber.UserNotFoundByPhoneNumber(model.PhoneNumber).Throw();
             }
             var info = new UserLoginInfo(WChatLoginProvider, model.OpenId, "weixin");
             var result = await _userManager.AddLoginAsync(user, info);
@@ -445,12 +465,15 @@ namespace RigoFunc.Account.Default {
         public async Task<IResponse> LoginAsync(OpenIdLoginModel model) {
             var user = await _userManager.FindByLoginAsync(WChatLoginProvider, model.OpenId);
             if (user == null) {
-                throw new ArgumentException("cannot login with weixin open id.");
+                new InvokeError {
+                    Code = "OpenIdLogin",
+                    Message = "cannot login with weixin open id."
+                }.Throw();
             }
 
             // cannot login if the user had been lockedout
             if (await _userManager.IsLockedOutAsync(user)) {
-                throw new Exception(Resources.LockedOutUser);
+                _errorDescriber.UserLoginFailureBecauseIsLockout().Throw();
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
@@ -459,9 +482,10 @@ namespace RigoFunc.Account.Default {
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
             var response = await _accessTokenProvider.RequestTokenAsync(userName, code);
             if (response.IsError) {
-                _logger.LogError(response.ToString());
-
-                throw new ArgumentNullException(response.Error);
+                new InvokeError {
+                    Code = "OpenIdLogin",
+                    Message = response.Error
+                }.Throw();
             }
 
             return response;
@@ -484,14 +508,16 @@ namespace RigoFunc.Account.Default {
             return false;
         }
 
-        private void HandleErrors(IdentityResult result, string throwMsg = null) {
+        private IEnumerable<InvokeError> HandleErrors(IdentityResult result, string throwMsg = null) {
+            var list = new List<InvokeError>();
             foreach (var error in result.Errors) {
-                _logger.LogError($"code: {error.Code} description: {error.Description}");
+                list.Add(new InvokeError {
+                    Code = error.Code,
+                    Message = error.Description
+                });
             }
 
-            if (!string.IsNullOrEmpty(throwMsg)) {
-                throw new Exception(throwMsg);
-            }
+            return list;
         }
     }
 }

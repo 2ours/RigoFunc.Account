@@ -23,7 +23,7 @@ namespace RigoFunc.Account.Default {
         /// <param name="userName">The name of the user.</param>
         /// <returns>A new instance of type <typeparamref name="TUser" />.</returns>
         public TUser CreateUser(string userName) {
-            // have multi-thread issue?
+            // any multi-thread issue?
             if(_strategy == Strategy.Unknown) {
                 _strategy = Strategy.Throw;
 

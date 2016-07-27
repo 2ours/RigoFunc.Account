@@ -1,6 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Love.Net.Core;
 using RigoFunc.Account.Models;
 using RigoFunc.Account.Services;
 using RigoFunc.OAuth;
@@ -9,19 +10,17 @@ namespace RigoFunc.Account {
     [Route("api/[controller]")]
     public class AccountController {
         private readonly IAccountService _service;
-
-        public AccountController(IAccountService service) {
+        private readonly InvokeErrorDescriber _errorDescriber;
+        
+        public AccountController(IAccountService service, InvokeErrorDescriber describer = null) {
             _service = service;
+            _errorDescriber = describer ?? new InvokeErrorDescriber();
         }
 
         [HttpGet]
         public async Task<OAuthUser> Get([FromQuery]FindUserModel model) {
-            if (model == null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if (model.Id == null && string.IsNullOrEmpty(model.PhoneNumber)) {
-                throw new ArgumentException("must provide user id or phone number. e.g. ?userId=111&phonenumber=phone");
+            if (model == null || (model.Id == null && string.IsNullOrEmpty(model.PhoneNumber))) {
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.GetAsync(model);
@@ -30,17 +29,17 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> Lockout([FromBody]LockoutModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.LockoutAsync(model);
         }
 
-        //[Authrize]
+        [Authorize]
         [HttpPost("[action]")]
         public async Task<bool> Create([FromBody]RegisterModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.CreateAsync(model);
@@ -49,7 +48,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> Register([FromBody]RegisterModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.RegisterAsync(model);
@@ -58,7 +57,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> SendCode([FromBody]SendCodeModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.SendCodeAsync(model);
@@ -67,7 +66,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> Login([FromBody]LoginModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.LoginAsync(model);
@@ -76,7 +75,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> VerifyCode([FromBody]VerifyCodeModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.VerifyCodeAsync(model);
@@ -85,7 +84,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> ChangePassword([FromBody]ChangePasswordModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.ChangePasswordAsync(model);
@@ -94,7 +93,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> ResetPassword([FromBody]ResetPasswordModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.ResetPasswordAsync(model);
@@ -103,7 +102,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> Update([FromBody]UpdateUserClaimsModel model) {
             if (model == null) {
-                throw new ArgumentNullException(nameof(model));
+                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
             return await _service.UpdateAsync(model);

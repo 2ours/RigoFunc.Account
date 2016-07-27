@@ -117,56 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LockedOutUser" xml:space="preserve">
-    <value>登陆失败，因为账号已经被锁定</value>
-    <comment>failed because the user was logged out.</comment>
+  <data name="BadArgument" xml:space="preserve">
+    <value>请求参数错误</value>
   </data>
-  <data name="LockoutUserFailed" xml:space="preserve">
-    <value>设置用户锁定状态失败</value>
-    <comment>Failed to set user lockout status.</comment>
+  <data name="CodeInvalidOrTimeout" xml:space="preserve">
+    <value>验证码{0}无效或3分钟超时 </value>
   </data>
-  <data name="LoginFailedWithCodeAndPhone" xml:space="preserve">
-    <value>验证码[{0}]手机号[{1}]登陆失败</value>
-    <comment>login failed with code and phone</comment>
-  </data>
-  <data name="NotFoundUserById" xml:space="preserve">
-    <value>无法通过用户编号[{0}]}找到用户</value>
-    <comment>user not found by id</comment>
-  </data>
-  <data name="NotFoundUserByPhoneNumber" xml:space="preserve">
-    <value>无法通过手机号[{0}]找到用户</value>
-    <comment>user not found by phone</comment>
-  </data>
-  <data name="PasswordResetFailed" xml:space="preserve">
-    <value>用户[{0}]重置密码失败</value>
-    <comment>reset password error</comment>
+  <data name="DefaultError" xml:space="preserve">
+    <value>未知错误</value>
   </data>
   <data name="PhoneNumberHadBeenRegister" xml:space="preserve">
-    <value>手机号[{0}]已经被注册</value>
-    <comment>phone number had been register</comment>
+    <value>电话号码{0}已经被注册</value>
   </data>
   <data name="PhoneNumberOrPasswordError" xml:space="preserve">
-    <value>用户名或密码错误</value>
-    <comment>user name or password error</comment>
+    <value>电话号码或者密码错误</value>
   </data>
-  <data name="RegisterNewUserFailed" xml:space="preserve">
-    <value>注册新用户失败，手机号[{0}]验证码[{1}]</value>
-    <comment>user register failed</comment>
+  <data name="RegisterNewUserFailure" xml:space="preserve">
+    <value>电话号码{0}验证码{1}注册失败</value>
   </data>
-  <data name="SendCodeFailed" xml:space="preserve">
-    <value>发送验证码至手机号[{0}]失败，错误信息[{1}]</value>
-    <comment>send code failed</comment>
+  <data name="ResetPasswordFailure" xml:space="preserve">
+    <value>重置密码失败</value>
+  </data>
+  <data name="SendCodeFailure" xml:space="preserve">
+    <value>验证码发送失败</value>
   </data>
   <data name="SendPasswordFailed" xml:space="preserve">
-    <value>发送初始密码至手机号[{0}]失败，错误信息[{1}]</value>
-    <comment>send password failed</comment>
+    <value>初始密码发送失败</value>
   </data>
-  <data name="UpdateUserFailed" xml:space="preserve">
+  <data name="UserLockoutFailure" xml:space="preserve">
+    <value>用户锁定失败</value>
+  </data>
+  <data name="UserLoginFailureBecauseIsLockout" xml:space="preserve">
+    <value>锁定账号无法登陆</value>
+  </data>
+  <data name="UserLoginFailureWithPhoneAndCode" xml:space="preserve">
+    <value>电话号码{0}验证码{1}登陆失败</value>
+  </data>
+  <data name="UserNotFoundById" xml:space="preserve">
+    <value>无法通过编号{0}找到用户</value>
+  </data>
+  <data name="UserNotFoundByPhoneNumber" xml:space="preserve">
+    <value>无法电话号码{0}找到用户</value>
+  </data>
+  <data name="UserUpdateFailure" xml:space="preserve">
     <value>用户更新失败</value>
-    <comment>update user failed</comment>
-  </data>
-  <data name="VerifyCodeFailed" xml:space="preserve">
-    <value>验证码[{0}]无效或3分钟超时</value>
-    <comment>verify code failed</comment>
   </data>
 </root>

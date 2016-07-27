@@ -117,56 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LockedOutUser" xml:space="preserve">
-    <value>Login failed because the user was lockout.</value>
-    <comment>failed because the user was lockout</comment>
+  <data name="BadArgument" xml:space="preserve">
+    <value>The request argument is invalid.</value>
   </data>
-  <data name="LockoutUserFailed" xml:space="preserve">
-    <value>Failed to set user lockout status.</value>
-    <comment>Failed to set user lockout status.</comment>
+  <data name="CodeInvalidOrTimeout" xml:space="preserve">
+    <value>Code {0} is invalid or timeout with 3 minutes</value>
   </data>
-  <data name="LoginFailedWithCodeAndPhone" xml:space="preserve">
-    <value>Failed login with code [{0}] and phone number [{1}]</value>
-    <comment>login failed with code and phone</comment>
-  </data>
-  <data name="NotFoundUserById" xml:space="preserve">
-    <value>Cannot found the user by id [{0}]</value>
-    <comment>user not found by id</comment>
-  </data>
-  <data name="NotFoundUserByPhoneNumber" xml:space="preserve">
-    <value>Cannot found the user by phone number [{0}]</value>
-    <comment>user not found by phone</comment>
-  </data>
-  <data name="PasswordResetFailed" xml:space="preserve">
-    <value>Failed to reset the password for user [{0}]</value>
-    <comment>reset password error</comment>
+  <data name="DefaultError" xml:space="preserve">
+    <value>An unknown failure has occurred.</value>
   </data>
   <data name="PhoneNumberHadBeenRegister" xml:space="preserve">
-    <value>The phone number [{0}] had been register</value>
-    <comment>phone number had been register</comment>
+    <value>Phone number {0} had been register.</value>
   </data>
   <data name="PhoneNumberOrPasswordError" xml:space="preserve">
-    <value>Phone number or password error</value>
-    <comment>user name or password error</comment>
+    <value>Phone number or password error.</value>
   </data>
-  <data name="RegisterNewUserFailed" xml:space="preserve">
-    <value>Cannot to register new user with phone [{0}] code [{1}]</value>
-    <comment>user register failed</comment>
+  <data name="RegisterNewUserFailure" xml:space="preserve">
+    <value>Register new user failure with phone number {0} and code {1}.</value>
   </data>
-  <data name="SendCodeFailed" xml:space="preserve">
-    <value>Failed to send code to the phone [{0}], error message [{1}]</value>
-    <comment>send code failed</comment>
+  <data name="ResetPasswordFailure" xml:space="preserve">
+    <value>Reset password failure.</value>
+  </data>
+  <data name="SendCodeFailure" xml:space="preserve">
+    <value>Send code failure.</value>
   </data>
   <data name="SendPasswordFailed" xml:space="preserve">
-    <value>Failed to send the initial password to the phone [{0}]</value>
-    <comment>send password failed</comment>
+    <value>Send the initial password failure.</value>
   </data>
-  <data name="UpdateUserFailed" xml:space="preserve">
-    <value>Failed to update user</value>
-    <comment>update user failed</comment>
+  <data name="UserLockoutFailure" xml:space="preserve">
+    <value>User lockout failure.</value>
   </data>
-  <data name="VerifyCodeFailed" xml:space="preserve">
-    <value>The code [{0}] is invalid or timeout with 3 minutes</value>
-    <comment>verify code failed</comment>
+  <data name="UserLoginFailureBecauseIsLockout" xml:space="preserve">
+    <value>User login failure because was lockout.</value>
+  </data>
+  <data name="UserLoginFailureWithPhoneAndCode" xml:space="preserve">
+    <value>User login failure with phone number {0} and code {1}.</value>
+  </data>
+  <data name="UserNotFoundById" xml:space="preserve">
+    <value>User not found by id {0}</value>
+  </data>
+  <data name="UserNotFoundByPhoneNumber" xml:space="preserve">
+    <value>User not found by phone number {0}</value>
+  </data>
+  <data name="UserUpdateFailure" xml:space="preserve">
+    <value>User update failure.</value>
   </data>
 </root>
