@@ -26,8 +26,8 @@ public void ConfigureServices(IServiceCollection services) {
 }
 ```
 
-POST:
-api/account/register
+POST: api/account/register
+```JSON
 {
     Username:"username",
     Password:"password"
