@@ -11,17 +11,19 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RigoFunc.Account.Models;
+using RigoFunc.Account.Services;
 using RigoFunc.OAuth;
 using RigoFunc.Utils;
 
-namespace RigoFunc.Account.Services {
+namespace RigoFunc.Account.Default {
     /// <summary>
     /// Represents the default implementation of the <see cref="IAccountService"/> interface.
     /// </summary>
     /// <typeparam name="TUser">The type of the t user.</typeparam>
-    public class DefaultAccountService<TUser> : IAccountService where TUser : class {
+    internal class DefaultAccountService<TUser> : IAccountService where TUser : class {
         private readonly UserManager<TUser> _userManager;
         private readonly SignInManager<TUser> _signInManager;
+        private readonly IUserFactory<TUser> _userFactory;
         private readonly ISmsSender _smsSender;
         private readonly ILogger<DefaultAccountService<TUser>> _logger;
         private readonly ApiOptions _options;
@@ -34,20 +36,21 @@ namespace RigoFunc.Account.Services {
         /// </summary>
         /// <param name="userManager">The user manager.</param>
         /// <param name="signInManager">The sign in manager.</param>
-        /// <param name="emailSender">The email sender.</param>
+        /// <param name="userFactory">The user factory.</param>
         /// <param name="smsSender">The SMS sender.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="options">The options.</param>
         /// <param name="accessTokenProvider"></param>
         public DefaultAccountService(UserManager<TUser> userManager,
             SignInManager<TUser> signInManager,
-            IEmailSender emailSender,
+            IUserFactory<TUser> userFactory,
             ISmsSender smsSender,
             ILogger<DefaultAccountService<TUser>> logger,
             IOptions<ApiOptions> options,
             IAccessTokenProvider accessTokenProvider) {
             _userManager = userManager;
             _signInManager = signInManager;
+            _userFactory = userFactory;
             _smsSender = smsSender;
             _accessTokenProvider = accessTokenProvider;
             _options = options.Value;
@@ -138,8 +141,7 @@ namespace RigoFunc.Account.Services {
                 throw new ArgumentException(string.Format(Resources.PhoneNumberHadBeenRegister, model.PhoneNumber));
             }
 
-            // must have a constructor with only one user name parameter.
-            user = Activator.CreateInstance(typeof(TUser), model.UserName ?? model.PhoneNumber) as TUser;
+            user = _userFactory.CreateUser(model.UserName ?? model.PhoneNumber);
 
             // why md5 here? because we should force APP or web to MD5 their plain password
             var password = model.Password ?? $"{GenericUtil.UniqueKey(3)}@{model.Code ?? GenerateCode(model.PhoneNumber)}";
@@ -186,9 +188,7 @@ namespace RigoFunc.Account.Services {
                 throw new ArgumentException(string.Format(Resources.VerifyCodeFailed, model.Code));
             }
 
-            // must have a constructor with only one user name parameter.
-            user = Activator.CreateInstance(typeof(TUser), model.UserName ?? model.PhoneNumber) as TUser;
-
+            user = _userFactory.CreateUser(model.UserName ?? model.PhoneNumber);
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded) {
                 HandleErrors(result, string.Format(Resources.RegisterNewUserFailed, model.PhoneNumber, model.Code));
@@ -274,9 +274,7 @@ namespace RigoFunc.Account.Services {
 
                 var password = $"{GenericUtil.UniqueKey(3)}@{model.Code}";
 
-                // must have a constructor with only one user name parameter.
-                user = Activator.CreateInstance(typeof(TUser), model.PhoneNumber) as TUser;
-
+                user = _userFactory.CreateUser(model.PhoneNumber);
                 // why md5 here? because we should force APP or web to MD5 their plain password
                 var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
                 if (!result.Succeeded) {
@@ -468,8 +466,6 @@ namespace RigoFunc.Account.Services {
 
             return response;
         }
-
-
 
         internal string GenerateCode(string phoneNumber) {
             var securityStamp = Encoding.Unicode.GetBytes(DefaultSecurityStamp);

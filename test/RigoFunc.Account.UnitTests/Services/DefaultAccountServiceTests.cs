@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Love.Net.Core;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using RigoFunc.Account.Default;
 using RigoFunc.Account.Services;
 using RigoFunc.Account.UnitTests.Supports;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
-using Love.Net.Core;
 
 namespace RigoFunc.Account.UnitTests.Services {
     public class DefaultAccountServiceTests {
@@ -24,7 +25,7 @@ namespace RigoFunc.Account.UnitTests.Services {
             })
             .AddEntityFrameworkStores<ApplicationDbContext, int>()
             .AddDefaultTokenProviders();
-            services.UseDefaultAccountService<ApplicationUser>();
+            services.AddAccountService<ApplicationUser>();
             services.AddTransient<IEmailSender, Sender>();
             services.AddTransient<ISmsSender, Sender>();
             var serviceProvider = services.BuildServiceProvider();

@@ -20,7 +20,7 @@ namespace RigoFunc.Account.IntegrationTests {
         public RegisterTests(ITestOutputHelper output) {
             _output = output;
             _server = new TestServer(new WebHostBuilder()
-    .UseStartup<Startup>());
+                .UseStartup<Startup>());
             _client = _server.CreateClient();
             _sender = _server.Host.Services.GetService<ISmsSender>() as Sender;
         }

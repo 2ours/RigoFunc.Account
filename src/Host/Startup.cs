@@ -37,7 +37,7 @@ namespace Host {
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.UseDefaultAccountService<ApplicationUser>();
+            services.AddAccountService<ApplicationUser>();
             services.AddTransient<IAccessTokenProvider, MockAccessTokenProvider>();
             services.AddMvcCore().AddJsonFormatters().AddApiHelp();
         }

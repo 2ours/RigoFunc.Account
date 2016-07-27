@@ -3,16 +3,17 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RigoFunc.Account.Services;
 
-namespace RigoFunc.Account.Services {
-    public class IdentityServerAccessTokenProvider : IAccessTokenProvider {
-        private readonly ILogger<IdentityServerAccessTokenProvider> _logger;
+namespace RigoFunc.Account.Default {
+    internal class DefaultAccessTokenProvider : IAccessTokenProvider {
+        private readonly ILogger<DefaultAccessTokenProvider> _logger;
         private readonly HttpContext _httpContext;
         private readonly ApiOptions _options;
 
-        public IdentityServerAccessTokenProvider(IHttpContextAccessor contextAccessor,
+        public DefaultAccessTokenProvider(IHttpContextAccessor contextAccessor,
             IOptions<ApiOptions> options,
-            ILogger<IdentityServerAccessTokenProvider> logger) {
+            ILogger<DefaultAccessTokenProvider> logger) {
             _httpContext = contextAccessor.HttpContext;
             _logger = logger;
             _options = options.Value;
