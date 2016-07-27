@@ -16,8 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection {
         /// <typeparam name="TUser">The type representing a User in the system.</typeparam>
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">An action to configure the <see cref="ApiOptions"/>.</param>
-        /// <returns>The services available in the application.</returns>
-        public static IServiceCollection AddAccountService<TUser>(this IServiceCollection services, Action<ApiOptions> setupAction = null)
+        /// <returns>An instance of <see cref="AccountApiBuilder"/> for further configuration account service.</returns>
+        public static AccountApiBuilder AddAccountService<TUser>(this IServiceCollection services, Action<ApiOptions> setupAction = null)
             where TUser : class {
             if (setupAction != null) {
                 services.Configure(setupAction);
@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection {
             services.TryAddScoped<IAccountService, DefaultAccountService<TUser>>();
             services.TryAddScoped<IAccessTokenProvider, DefaultAccessTokenProvider>();
 
-            return services;
+            return new AccountApiBuilder(services);
         }
     }
 }
