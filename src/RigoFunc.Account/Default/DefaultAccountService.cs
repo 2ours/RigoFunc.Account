@@ -150,18 +150,14 @@ namespace RigoFunc.Account.Default {
             var password = model.Password ?? $"{GenericUtil.UniqueKey(3)}@{model.Code ?? GenerateCode(model.PhoneNumber)}";
             var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
             if (!result.Succeeded) {
-                var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
-                error.Details = HandleErrors(result);
-                error.Throw();
+                _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code).Append(HandleErrors(result)).Throw();
             }
 
             // set phone number.
             if (_userManager.SupportsUserPhoneNumber) {
                 result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!result.Succeeded) {
-                    var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
-                    error.Details = HandleErrors(result);
-                    error.Throw();
+                    _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code).Append(HandleErrors(result)).Throw();
                 }
             }
 
@@ -200,18 +196,14 @@ namespace RigoFunc.Account.Default {
             user = _userFactory.CreateUser(model.UserName ?? model.PhoneNumber);
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded) {
-                var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
-                error.Details = HandleErrors(result);
-                error.Throw();
+                _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code).Append(HandleErrors(result)).Throw();
             }
 
             // set phone number.
             if (_userManager.SupportsUserPhoneNumber) {
                 result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!result.Succeeded) {
-                    var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
-                    error.Details = HandleErrors(result);
-                    error.Throw();
+                    _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code).Append(HandleErrors(result)).Throw();
                 }
             }
 
@@ -288,18 +280,14 @@ namespace RigoFunc.Account.Default {
                 // why md5 here? because we should force APP or web to MD5 their plain password
                 var result = await _userManager.CreateAsync(user, GenericUtil.EncryptMD5(password));
                 if (!result.Succeeded) {
-                    var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
-                    error.Details = HandleErrors(result);
-                    error.Throw();
+                    _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code).Append(HandleErrors(result)).Throw();
                 }
 
                 // set phone number.
                 if (_userManager.SupportsUserPhoneNumber) {
                     result = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                     if (!result.Succeeded) {
-                        var error = _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code);
-                        error.Details = HandleErrors(result);
-                        error.Throw();
+                        _errorDescriber.RegisterNewUserFailure(model.PhoneNumber, model.Code).Append(HandleErrors(result)).Throw();
                     }
                 }
 
@@ -352,14 +340,14 @@ namespace RigoFunc.Account.Default {
             }
 
             var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            if (result.Succeeded) {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return true;
+            if (!result.Succeeded) {
+                _errorDescriber.ChangePasswordFailure().Append(HandleErrors(result)).Throw();
+
             }
 
-            HandleErrors(result);
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -380,9 +368,7 @@ namespace RigoFunc.Account.Default {
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, code, model.Password);
             if (!result.Succeeded) {
-                var error = _errorDescriber.ResetPasswordFailure();
-                error.Details = HandleErrors(result);
-                error.Throw();
+                _errorDescriber.ResetPasswordFailure().Append(HandleErrors(result)).Throw();
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
@@ -407,9 +393,7 @@ namespace RigoFunc.Account.Default {
             // add again
             result = await _userManager.AddClaimsAsync(identityUser, user.ToClaims());
             if (!result.Succeeded) {
-                var error = _errorDescriber.UserUpdateFailure();
-                error.Details = HandleErrors(result);
-                error.Throw();
+                _errorDescriber.UserUpdateFailure().Append(HandleErrors(result)).Throw();
             }
 
             return true;
@@ -506,7 +490,7 @@ namespace RigoFunc.Account.Default {
             return false;
         }
 
-        private IEnumerable<InvokeError> HandleErrors(IdentityResult result, string throwMsg = null) {
+        private InvokeError[] HandleErrors(IdentityResult result, string throwMsg = null) {
             var list = new List<InvokeError>();
             foreach (var error in result.Errors) {
                 list.Add(new InvokeError {
@@ -515,7 +499,7 @@ namespace RigoFunc.Account.Default {
                 });
             }
 
-            return list;
+            return list.ToArray();
         }
     }
 }

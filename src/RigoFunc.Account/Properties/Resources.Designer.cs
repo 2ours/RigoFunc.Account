@@ -52,6 +52,15 @@ namespace RigoFunc.Account {
         }
 
         /// <summary>
+        ///    Looks up a localized string similar to Change password failure.
+        /// </summary>
+        public static string ChangePasswordFailure {
+            get {
+                return ResourceManager.GetString("ChangePasswordFailure", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///    Looks up a localized string similar to Code {0} is invalid or timeout with 3 minutes.
         /// </summary>
         internal static string CodeInvalidOrTimeout {

@@ -120,6 +120,9 @@
   <data name="BadArgument" xml:space="preserve">
     <value>The request argument is invalid.</value>
   </data>
+  <data name="ChangePasswordFailure" xml:space="preserve">
+    <value>Change password failure</value>
+  </data>
   <data name="CodeInvalidOrTimeout" xml:space="preserve">
     <value>Code {0} is invalid or timeout with 3 minutes</value>
   </data>

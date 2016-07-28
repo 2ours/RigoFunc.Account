@@ -19,7 +19,7 @@ namespace RigoFunc.Account {
         [HttpGet]
         public async Task<User> Get([FromQuery]FindUserModel model) {
             if (model == null || (model.Id == null && string.IsNullOrEmpty(model.PhoneNumber))) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.GetAsync(model);
@@ -28,7 +28,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> Lockout([FromBody]LockoutModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.LockoutAsync(model);
@@ -38,7 +38,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> Create([FromBody]RegisterModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.CreateAsync(model);
@@ -47,7 +47,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> Register([FromBody]RegisterModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.RegisterAsync(model);
@@ -56,7 +56,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> SendCode([FromBody]SendCodeModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.SendCodeAsync(model);
@@ -65,7 +65,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> Login([FromBody]LoginModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.LoginAsync(model);
@@ -74,7 +74,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> VerifyCode([FromBody]VerifyCodeModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.VerifyCodeAsync(model);
@@ -83,7 +83,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> ChangePassword([FromBody]ChangePasswordModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.ChangePasswordAsync(model);
@@ -92,7 +92,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<IResponse> ResetPassword([FromBody]ResetPasswordModel model) {
             if (model == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.ResetPasswordAsync(model);
@@ -101,7 +101,7 @@ namespace RigoFunc.Account {
         [HttpPost("[action]")]
         public async Task<bool> Update([FromBody]User user) {
             if (user == null) {
-                throw new Exception<InvokeError>(_errorDescriber.BadArgument());
+                _errorDescriber.BadArgument().Throw();
             }
 
             return await _service.UpdateAsync(user);

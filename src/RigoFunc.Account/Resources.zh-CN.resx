@@ -120,6 +120,9 @@
   <data name="BadArgument" xml:space="preserve">
     <value>请求参数错误</value>
   </data>
+  <data name="ChangePasswordFailure" xml:space="preserve">
+    <value>更改密码失败</value>
+  </data>
   <data name="CodeInvalidOrTimeout" xml:space="preserve">
     <value>验证码{0}无效或3分钟超时 </value>
   </data>
