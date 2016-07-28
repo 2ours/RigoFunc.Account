@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Love.Net.Core;
 using RigoFunc.Account.Models;
-using RigoFunc.OAuth;
 
 namespace RigoFunc.Account.Services {
     /// <summary>
@@ -8,11 +8,11 @@ namespace RigoFunc.Account.Services {
     /// </summary>
     public interface IAccountService {
         /// <summary>
-        /// Gets OAuth user by the specified user Id or Phone number asynchronous.
+        /// Gets user by the specified user Id or phone number asynchronous.
         /// </summary>
-        /// <param name="model">The model contains the user Id or Phone number.</param>
+        /// <param name="model">The model contains the user Id or phone number.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the get operation. Task result contains the found user.</returns>
-        Task<OAuthUser> GetAsync(FindUserModel model);
+        Task<User> GetAsync(FindUserModel model);
         /// <summary>
         /// Sets a flag indicating whether the specified user is locked out, as an asynchronous operation.
         /// </summary>
@@ -64,9 +64,9 @@ namespace RigoFunc.Account.Services {
         /// <summary>
         /// Updates the specified user asynchronous.
         /// </summary>
-        /// <param name="model">The model.</param>
+        /// <param name="user">The user to update.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the reset operation.</returns>
-        Task<bool> UpdateAsync(UpdateUserClaimsModel model);
+        Task<bool> UpdateAsync(User user);
         /// <summary>
         /// Binds the open ID for the specified user asynchronous.
         /// </summary>

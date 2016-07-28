@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -7,14 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using IdentityModel;
-using Love.Net.Core;
 using Newtonsoft.Json;
+using Love.Net.Core;
 using RigoFunc.Account.Models;
 using RigoFunc.Account.Services;
-using RigoFunc.OAuth;
 using RigoFunc.Utils;
-using System.Collections.Generic;
 
 namespace RigoFunc.Account.Default {
     /// <summary>
@@ -63,11 +61,11 @@ namespace RigoFunc.Account.Default {
         }
 
         /// <summary>
-        /// Gets OAuth user by the specified user Id or Phone number asynchronous.
+        /// Gets user by the specified user Id or phone number asynchronous.
         /// </summary>
-        /// <param name="model">The model contains the user Id or Phone number.</param>
+        /// <param name="model">The model contains the user Id or phone number.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the get operation. Task result contains the found user.</returns>
-        public async Task<OAuthUser> GetAsync(FindUserModel model) {
+        public async Task<User> GetAsync(FindUserModel model) {
             TUser user;
             if (model.Id != null) {
                 user = await _userManager.FindByIdAsync(model.Id.ToString());
@@ -108,7 +106,7 @@ namespace RigoFunc.Account.Default {
                 }
             }
 
-            return OAuthUser.FromUser(userPrincipal);
+            return User.FromUser(userPrincipal);
         }
 
         /// <summary>
@@ -395,19 +393,19 @@ namespace RigoFunc.Account.Default {
         /// <summary>
         /// Updates the specified user asynchronous.
         /// </summary>
-        /// <param name="model">The model.</param>
+        /// <param name="user">The user to update.</param>
         /// <returns>A <see cref="Task{TResult}"/> represents the reset operation.</returns>
-        public async Task<bool> UpdateAsync(UpdateUserClaimsModel model) {
-            var user = await _userManager.FindByIdAsync(model.Id.ToString());
-            if (user == null) {
-                _errorDescriber.UserNotFoundById(model.Id.ToString()).Throw();
+        public async Task<bool> UpdateAsync(User user) {
+            var identityUser = await _userManager.FindByIdAsync(user.Id.ToString());
+            if (identityUser == null) {
+                _errorDescriber.UserNotFoundById(user.Id.ToString()).Throw();
             }
 
-            var claims = model.ToClaims();
+            var claims = user.ToClaims();
             // remove
-            var result = await _userManager.RemoveClaimsAsync(user, claims);
+            var result = await _userManager.RemoveClaimsAsync(identityUser, claims);
             // add again
-            result = await _userManager.AddClaimsAsync(user, model.ToClaims());
+            result = await _userManager.AddClaimsAsync(identityUser, user.ToClaims());
             if (!result.Succeeded) {
                 var error = _errorDescriber.UserUpdateFailure();
                 error.Details = HandleErrors(result);
@@ -449,7 +447,7 @@ namespace RigoFunc.Account.Default {
             }
 
             // add a claim for this user.
-            result = await _userManager.AddClaimAsync(user, new Claim(OAuthClaimTypes.WChat, model.OpenId));
+            result = await _userManager.AddClaimAsync(user, new Claim(JwtClaimTypes.WChat, model.OpenId));
             if (!result.Succeeded) {
                 _logger.LogError($"User: {model.PhoneNumber} add claim error: {result.ToString()}");
             }

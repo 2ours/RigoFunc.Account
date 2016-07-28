@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Love.Net.Core;
 using RigoFunc.Account.Models;
 using RigoFunc.Account.Services;
-using RigoFunc.OAuth;
 
 namespace RigoFunc.Account {
     [Route("api/[controller]")]
@@ -18,7 +17,7 @@ namespace RigoFunc.Account {
         }
 
         [HttpGet]
-        public async Task<OAuthUser> Get([FromQuery]FindUserModel model) {
+        public async Task<User> Get([FromQuery]FindUserModel model) {
             if (model == null || (model.Id == null && string.IsNullOrEmpty(model.PhoneNumber))) {
                 throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
@@ -100,12 +99,12 @@ namespace RigoFunc.Account {
         }
 
         [HttpPost("[action]")]
-        public async Task<bool> Update([FromBody]UpdateUserClaimsModel model) {
-            if (model == null) {
+        public async Task<bool> Update([FromBody]User user) {
+            if (user == null) {
                 throw new Exception<InvokeError>(_errorDescriber.BadArgument());
             }
 
-            return await _service.UpdateAsync(model);
+            return await _service.UpdateAsync(user);
         }
     }
 }

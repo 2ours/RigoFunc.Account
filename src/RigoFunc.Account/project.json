@@ -23,14 +23,14 @@
     "xmlDoc": true,
     "warningsAsErrors": true
   },
-    "dependencies": {
-        "NETStandard.Library": "1.6.0",
-        "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
-        "Microsoft.AspNetCore.Identity": "1.0.0",
-        "Love.Net.Core": "1.0.1",
-        "RigoFunc.OAuth": "1.0.4",
-        "RigoFunc.Utils": "1.0.4"
-    },
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+    "Microsoft.AspNetCore.Identity": "1.0.0",
+    "IdentityModel": "2.0.0-beta5",
+    "Love.Net.Core": "1.0.2",
+    "RigoFunc.Utils": "1.0.4"
+  },
 
   "frameworks": {
     "netstandard1.6": {
