@@ -1,12 +1,17 @@
 ﻿namespace RigoFunc.Account.Models {
+    /// <summary>
+    /// Represents the DTO/ViewModel to verify the code.
+    /// </summary>
     public class VerifyCodeModel {
         /// <summary>
-        /// 电话号码.
+        /// Gets or sets the phone number.
         /// </summary>
+        /// <value>The phone number.</value>
         public string PhoneNumber { get; set; }
         /// <summary>
-        /// 验证码.
+        /// Gets or sets the code.
         /// </summary>
+        /// <value>The code.</value>
         public string Code { get; set; }
     }
 }

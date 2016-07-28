@@ -1,8 +1,12 @@
 ﻿namespace RigoFunc.Account.Models {
+    /// <summary>
+    /// Represents the DTO/ViewModel to send code.
+    /// </summary>
     public class SendCodeModel {
         /// <summary>
-        /// 电话号码.
+        /// Gets or sets the phone number.
         /// </summary>
+        /// <value>The phone number.</value>
         public string PhoneNumber { get; set; }
     }
 }

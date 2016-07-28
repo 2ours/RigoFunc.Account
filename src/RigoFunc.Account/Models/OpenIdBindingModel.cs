@@ -1,12 +1,17 @@
 ﻿namespace RigoFunc.Account.Models {
+    /// <summary>
+    /// Represents the DTO/ViewModel to binding the third-party open Id.
+    /// </summary>
     public class OpenIdBindingModel {
         /// <summary>
-        /// 电话号码.
+        /// Gets or sets the phone number.
         /// </summary>
+        /// <value>The phone number.</value>
         public string PhoneNumber { get; set; }
         /// <summary>
-        /// 用户唯一标识.
+        /// Gets or sets the open identifier.
         /// </summary>
+        /// <value>The open identifier.</value>
         public string OpenId { get; set; }
     }
 }

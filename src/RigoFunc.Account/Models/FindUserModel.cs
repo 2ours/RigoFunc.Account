@@ -1,12 +1,17 @@
 ﻿namespace RigoFunc.Account.Models {
+    /// <summary>
+    /// Represents the view model/DTO to find/search user.
+    /// </summary>
     public class FindUserModel {
         /// <summary>
-        /// 用户编号.
+        /// Gets or sets the identifier.
         /// </summary>
+        /// <value>The identifier.</value>
         public int? Id { get; set; }
         /// <summary>
-        /// 电话号码.
+        /// Gets or sets the phone number.
         /// </summary>
+        /// <value>The phone number.</value>
         public string PhoneNumber { get; set; }
     }
 }

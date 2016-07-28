@@ -1,6 +1,9 @@
 ﻿using System;
 
 namespace RigoFunc.Account.Models {
+    /// <summary>
+    /// Represents the view model/DTO to lockout user.
+    /// </summary>
     public class LockoutModel {
         /// <summary>
         /// Gets or sets the user name
