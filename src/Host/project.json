@@ -18,7 +18,7 @@
     "Microsoft.AspNetCore.Identity": "1.0.0",
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
     "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
-    "RigoFunc.Account": "1.0.*",
+    "RigoFunc.Account": "*",
     "Love.Net.Help": "1.0.0",
     "Love.Net.Help.UI": "1.0.0",
     "Microsoft.AspNetCore.Mvc.Formatters.Json": "1.0.0"
