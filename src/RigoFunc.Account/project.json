@@ -4,14 +4,15 @@
   "authors": [ "rigofunc", "rigofunc@outlook.com", "lotosbin", "lotosbin@gmail.com" ],
   "packOptions": {
     "projectUrl": "https://github.com/xyting/RigoFunc.Account",
-    "licenseUrl": "",
+    "licenseUrl": "https://github.com/xyting/RigoFunc.Account/blob/master/LICENSE",
     "repository": {
       "type": "git",
       "url": "https://github.com/xyting/RigoFunc.Account.git"
     },
     "tags": [
-      "Account",
-      "Identity"
+      "aspnetcore",
+      "account",
+      "identity"
     ]
   },
   "buildOptions": {
