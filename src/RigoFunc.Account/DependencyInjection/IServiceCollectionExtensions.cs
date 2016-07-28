@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection {
                 services.Configure(setupAction);
             }
 
-            services.TryAddScoped<IUserFactory<TUser>, DefaultUserFactory<TUser>>();
+            services.TryAddSingleton<IUserFactory<TUser>, DefaultUserFactory<TUser>>();
             services.TryAddScoped<IAccountService, DefaultAccountService<TUser>>();
             services.TryAddScoped<IAccessTokenProvider, DefaultAccessTokenProvider>();
 

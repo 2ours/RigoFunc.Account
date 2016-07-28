@@ -47,7 +47,7 @@ namespace RigoFunc.Account {
         /// <typeparam name="TFactory">The type of the t factory.</typeparam>
         /// <returns>The current <see cref="AccountApiBuilder"/> instance.</returns>
         public virtual AccountApiBuilder AddUserFactory<TUser, TFactory>() where TFactory : class, IUserFactory<TUser> where TUser : class {
-            Services.AddScoped<IUserFactory<TUser>, TFactory>();
+            Services.AddSingleton<IUserFactory<TUser>, TFactory>();
             return this;
         }
     }
