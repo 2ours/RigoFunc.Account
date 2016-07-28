@@ -35,6 +35,6 @@ POST: api/account/register
 ```
 
 # USE **Love.Net.Help** to view api
-- Configure [here](https://github.com/lovedotnet/Love.Net.Help)
+- Configuration [here](https://github.com/lovedotnet/Love.Net.Help)
 - Run Host Project
 - Open [http://localhost:57567/api/help/ui](http://localhost:57567/api/help/ui)
